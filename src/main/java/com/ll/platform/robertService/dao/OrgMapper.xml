@@ -1,0 +1,39 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.ll.platform.robertService.dao.OrgMapper">
+	
+	<resultMap type="com.ll.platform.robertService.model.Organization" id="org">
+		<result column="id" property="id"/>
+		<result column="orgCode" property="orgCode"/>
+		<result column="serviceOpen" property="serviceOpen"/>
+		<result column="serviceSecret" property="serviceSecret"/>
+		<collection property="schoolIds" ofType="java.lang.Integer">
+			<result column="schoolId"/>
+		</collection>
+	</resultMap>
+	
+	<select id="findBkOrg" parameterType="com.ll.platform.robertService.model.OrgQueryParam" resultMap="org">
+		SELECT
+			o.id id,
+			o.org_code orgCode,
+			o.service_open serviceOpen,
+			o.service_secret serviceSecret,
+			s.id schoolId
+		FROM
+			plat_bk_org o
+			LEFT JOIN plat_org_school s ON s.org_id = o.id AND s.school_status = 1
+		WHERE
+			1 = 1
+			<if test="orgCode != null and orgCode != ''">
+				AND o.org_code = #{orgCode}
+			</if>
+			<if test="serviceOpen != null and serviceOpen != ''">
+				AND o.service_open = #{serviceOpen}
+			</if>
+	</select>
+	
+	<select id="getSchoolIdsByOrgCode" resultType="java.lang.Integer">
+		SELECT id FROM plat_org_school WHERE school_status = 1 AND org_id = #{orgCode}
+	</select>
+
+</mapper>

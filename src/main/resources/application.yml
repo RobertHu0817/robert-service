@@ -1,0 +1,53 @@
+server:
+  port: 8981
+  servlet:
+    context-path: /robert-service
+spring:
+  mvc:
+    throw-exception-if-no-handler-found: true
+  resources:
+    add-mappings: false
+  shardingsphere:
+    datasource:
+      names: master,slave0
+      master:
+        type: com.zaxxer.hikari.HikariDataSource
+        driver-class-name: com.mysql.cj.jdbc.Driver
+        jdbc-url: jdbc:mysql://192.168.0.3:3306/RobertService?characterEncoding=utf-8&autoReconnect=true&serverTimezone=Asia/Shanghai
+        username: root
+        password: robert0817
+      slave0:
+        type: com.zaxxer.hikari.HikariDataSource
+        driver-class-name: com.mysql.cj.jdbc.Driver
+        jdbc-url: jdbc:mysql://192.168.0.15:3306/RobertService?characterEncoding=utf-8&autoReconnect=true&serverTimezone=Asia/Shanghai
+        username: robertRead
+        password: robertRead0817
+    masterslave:
+      name: ms
+      load-balance-algorithm-type: round_robin
+      master-data-source-name: master
+      slave-data-source-names: slave0
+    props:
+      sql:
+        show: false
+
+mybatis-plus:
+  mapper-locations:
+    - classpath:dao/*.xml
+    - classpath*:com/**/mapper/*.xml
+
+logging:
+  config: classpath:log4j2.xml
+
+
+props:
+  ignoredUrls:
+    - /swagger-ui.html
+    - /swagger-resources/**
+    - /swagger/**
+    - /**/v2/api-docs
+    - /webjars/springfox-swagger-ui/**
+
+#swagger base url
+swagger:
+  baseUrl: localhost:8981
